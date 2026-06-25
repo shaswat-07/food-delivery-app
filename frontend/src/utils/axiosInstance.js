@@ -3,7 +3,7 @@ import axios from 'axios'
 
 const axiosInstance = axios.create({
 
-    baseURL: 'http://localhost:5000',
+    baseURL: 'https://food-delivery-app-wkcr.onrender.com',
     withCredentials: true
 
 })
@@ -92,7 +92,7 @@ axiosInstance.interceptors.response.use(
         
 
                 const { data } = await axios.post(
-                    'http://localhost:5000/api/auth/refresh',
+                    'https://food-delivery-app-wkcr.onrender.com/api/auth/refresh',
 
                     {},
 
