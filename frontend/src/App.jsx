@@ -79,7 +79,7 @@ function ProtectedLayout(){
 
 async function verify(){
 
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem('access-token')
     if(!token){
 
         throw redirect('/auth/login')

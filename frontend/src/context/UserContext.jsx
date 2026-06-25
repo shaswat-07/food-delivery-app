@@ -47,8 +47,6 @@ export function UserProvider({ children }){
             console.log('Authenticated user found ', response.data)
         }catch(error){
 
-            console.log('User fetch failed:', error)
-
             setUser(null)
 
         }
@@ -60,6 +58,7 @@ export function UserProvider({ children }){
     useEffect(() => {
 
         async function initialize(){
+            
             await fetchCsrfToken()
             await fetchUser()
 

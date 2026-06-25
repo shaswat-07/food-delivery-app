@@ -15,6 +15,13 @@ function Navbar(){
     
     const user= useUser()
     
+    useEffect(()=>{
+        console.log('ye navbar ka loga hai')
+        console.log('User is ', user)
+        console.log('user.user is ', user.user)
+    },[user])
+    
+    
     const isAuthPage =
         location.pathname.includes('/auth')
 
@@ -67,20 +74,28 @@ function Navbar(){
     if(isMenuPage){
         return(
             <nav className="w-full bg-zinc-950 border-b border-zinc-800 px-4 sm:px-6 py-4 sm:py-5 flex items-center gap-5">
+                
                 <button
+
                     onClick={() =>{
+
                         if(location.state?.search){
-                            //console.log('Navigating back to home with search state: ', search)
+
                             navigate('/',{
+
                                 state:{
                                     search,
                                     searchResult
                                 }
+
                             })
-                            //yhaa aane k baad pichla state clear ho jaaye ensure it 
+                            
                         }else{
+
                             navigate(-1)
+
                         }
+
                     }}
                     className="text-white text-2xl hover:text-zinc-400 transition cursor-pointer"
                 >
