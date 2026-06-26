@@ -152,7 +152,7 @@ you can update the data inside `seed.js` and run the seed script again.
 
 ## Live Demo
 
-https://food-delivery-app.vercel.app
+https://food-delivery-app-sandy-tau-21.vercel.app
 
 ## Author
 
