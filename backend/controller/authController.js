@@ -118,16 +118,14 @@ export const googleLogin = async (req, res) => {
 
     try {
         
-
         const { token } = req.body
 
         const ticket = await client.verifyIdToken({
             idToken: token,
             audience: process.env.GOOGLE_CLIENT_ID
         })
-
+    
         const payload = ticket.getPayload()
-
         let user1 = await User.findOne({ email: payload.email })
 
         if (user1 && user1.provider === 'local') {
@@ -262,8 +260,7 @@ export const getMe = async (req, res) => {
 
         const user = await User.findById(req.user.id).select('-password')
         res.status(200).json(user)
-        console.log('GetMe controller success:', user)
-
+    
     } 
     catch (error) {
 

@@ -12,12 +12,14 @@ function Signup(){
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
+    const [loading , setLoading] = useState(false)
     
 
     async function handleSignup(){
 
         try{
 
+            setLoading(true)
             await axiosInstance.post(
                 '/api/auth/signup',
                 {
@@ -34,6 +36,11 @@ function Signup(){
 
             setError(error.response?.data || error.message)
             console.log(error.response?.data || error.message)
+
+        }
+        finally{
+
+            setLoading(false)
 
         }
     }
@@ -80,12 +87,38 @@ function Signup(){
                     className="w-full bg-zinc-800 text-white rounded-2xl p-4 outline-none border border-zinc-700 focus:border-zinc-500 transition"
                 />
 
-                <button
+                {
+                loading ?
+                (
+                    <button
+                        disabled
+                        className="w-full bg-white text-black rounded-2xl p-3 sm:p-4 font-semibold flex items-center justify-center gap-3 cursor-not-allowed"
+                    >
+
+                        <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+
+                        <span>Signing up</span>
+
+                    </button>
+                )
+                :
+                (
+                    <button
+                        onClick={handleSignup}
+                        className="w-full bg-white text-black rounded-2xl p-3 sm:p-4 font-semibold hover:opacity-90 transition cursor-pointer"
+                    >
+                        Sign up
+                    </button>
+                )
+                }
+
+
+                {/* <button
                     onClick={handleSignup}
                     className="w-full bg-white text-black rounded-2xl p-4 font-semibold hover:opacity-90 transition"
                 >
                     Signup
-                </button>
+                </button> */}
 
                 <div className="flex items-center gap-3">
 

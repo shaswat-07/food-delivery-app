@@ -15,13 +15,6 @@ function Navbar(){
     
     const user= useUser()
     
-    useEffect(()=>{
-        console.log('ye navbar ka loga hai')
-        console.log('User is ', user)
-        console.log('user.user is ', user.user)
-    },[user])
-    
-    
     const isAuthPage =
         location.pathname.includes('/auth')
 

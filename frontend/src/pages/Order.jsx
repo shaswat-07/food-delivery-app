@@ -4,6 +4,7 @@ import axiosInstance from '../utils/axiosInstance.js'
 import { useLocation } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import OrderSummary from '../components/OrderSummary'
+import OrderSkeleton from '../components/skeleton/OrderSkeleton.jsx'
 
 
 function Order(){
@@ -12,11 +13,16 @@ function Order(){
     const location = useLocation()
     const {selectedItems}= location.state || {}
     const navigate = useNavigate()
+
+
     const[orderDetails, setOrderDetails]= useState(null)
     const [address, setAddress]= useState('')
     const[addressError, setAddressError]= useState(false)
     const [isEditingAddress, setIsEditingAddress]= useState(false)
     const [button, setButton]= useState(true)
+    const [loader, setLoader]= useState(false)
+    const [orderLoading, setOrderLoading]= useState(true)
+    const [addressSaving, setAddressSaving]= useState(false)
     
 
     useEffect(()=>{
@@ -77,6 +83,7 @@ function Order(){
 
             }
 
+            setAddressSaving(true)
             const response= await axiosInstance.post('/api/order/saveAddress', {address: add})
             setAddressError(false)
             setIsEditingAddress(false)
@@ -85,6 +92,11 @@ function Order(){
         catch(error){
 
             console.error('Error fetching order details:', error)
+
+        }
+        finally{
+
+            setAddressSaving(false)
 
         }
 
@@ -103,6 +115,11 @@ function Order(){
             console.error('Error fetching order details:', error)
 
         }
+        finally{
+
+            setOrderLoading(false)
+
+        }
 
     }
 
@@ -115,6 +132,7 @@ function Order(){
                 setAddressError(true)
                 return
             }
+            setLoader(true)
             await axiosInstance.post('/api/order/place',
                 {items: selectedItems, address: address}
             )
@@ -128,6 +146,15 @@ function Order(){
         catch(error){
             console.error('Error placing order:',error)
         }
+        finally{
+
+            setLoader(false)
+
+        }
+    }
+
+    if(orderLoading){
+        return <OrderSkeleton/>
     }
     
 
@@ -164,6 +191,7 @@ function Order(){
                         isEditingAddress={isEditingAddress}
                         setIsEditingAddress={setIsEditingAddress}
                         button={button}
+                        addressSaving={addressSaving}
                     />
                 )
                 }
@@ -224,9 +252,23 @@ function Order(){
                 (
                     <button
                         onClick={handlePlaceOrder}
-                        className="w-full bg-red-500 hover:bg-red-600 transition py-4 sm:py-5 rounded-2xl text-base sm:text-lg font-semibold text-white"
+                        disabled={loader}
+                        className={`w-full py-4 sm:py-5 rounded-2xl text-base sm:text-lg font-semibold transition flex items-center justify-center gap-3 ${
+                            loader
+                                ? 'bg-red-500 text-white cursor-not-allowed'
+                                : 'bg-red-500 hover:bg-red-600 text-white cursor-pointer'
+                        }`}
                     >
-                        Place Order
+
+                        {
+                        loader &&
+                        (
+                            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        )
+                        }
+
+                        {loader ? 'Placing Order' : 'Place Order'}
+
                     </button>
                 )
                 }

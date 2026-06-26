@@ -3,15 +3,18 @@ import { useNavigate } from 'react-router-dom'
 import { useUser } from '../context/UserContext.jsx'
 import axiosInstance from '../utils/axiosInstance.js'
 import Navbar from '../components/Navbar'
+import ProfileSkeleton from '../components/skeleton/ProfileSkeleton.jsx'
 
 function Profile(){
 
     const navigate = useNavigate()
 
     const [currentUser, setCurrentUser] = useState(null)
-    const [logoutError, setLogoutError]= useState(false)
+    const[logoutError, setLogoutError]= useState(false)
 
     const user= useUser()
+    const {loading} =useUser()
+
     
     useEffect(() => {
 
@@ -39,6 +42,9 @@ function Profile(){
         }
     }
 
+    if (loading){
+        return <ProfileSkeleton/>
+    }
 
     return(
 

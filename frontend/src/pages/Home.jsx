@@ -4,11 +4,14 @@ import {useLocation, useNavigate} from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import RestaurantCard from '../components/RestaurantCard'
 import FoodCard from '../components/FoodCard'
+import { useUser } from '../context/UserContext.jsx'
+import HomeSkeleton from '../components/skeleton/HomeSkeleton.jsx'
 
 
 function Home(){
     const location = useLocation()
     const navigate= useNavigate()
+    const {loading} = useUser()
 
 
     const [restaurants, setRestaurants] = useState([])
@@ -17,14 +20,28 @@ function Home(){
     const [isVeg, setIsVeg]= useState(null)
     const [page,setPage]= useState(1)
     const [hasMore, setHasMore]= useState(true)
+    const [loader, setLoader]= useState(false)
+    const [restaurantLoading, setRestaurantLoading] = useState(true)
 
     useEffect(()=>{
+
         async function fetchRestaurants(){
+
             try{
+
                 const res= await axiosInstance.get('/api/restaurant/all')
                 setRestaurants(res.data.restaurants)
-            }catch(error){
+
+            }
+            catch(error){
+
                 console.log(error)
+
+            }
+            finally{
+
+                setRestaurantLoading(false)
+
             }
         }
         fetchRestaurants()
@@ -33,17 +50,18 @@ function Home(){
 
     async function handleSearch(e){
 
-
         setSearch(e)
+        setIsVeg(null)
         if(e.trim()===''){
+
             setSearchResult([])
             setPage(1)
             setHasMore(true)
             return
+
         }
         
-        try{
-            
+        try{            
             
             const res= await axiosInstance.get(`/api/food/search`,{
                 params:{
@@ -64,31 +82,44 @@ function Home(){
 
     async function loadMore() {
 
-
         if(!hasMore){
             return;
         }
 
         try{
             
+            setLoader(true)
             const nextPage= page+1
             const res= await axiosInstance.get('/api/food/search',{
+
                 params:{
+
                     search: search,
+                    isVeg: isVeg,
                     page: nextPage
+
                 }
+
             })
+
             setSearchResult(prev=>[...prev, ...res.data.foods])
             setPage(nextPage)
-
 
             if(nextPage>= res.data.totalPages){
                 setHasMore(false)
             }
 
 
-        }catch(error){
+        }
+        catch(error){
+
             console.log(error)
+
+        }
+        finally{
+
+            setLoader(false)
+
         }
         
     }
@@ -112,25 +143,54 @@ function Home(){
 
 
     async function handleFilter(isVeg){
+
         if(search.trim()===''){
-            return
+
+            setSearchResult([])
+            setPage(1)
+            setHasMore(true)
+            return;
+
         }
+
         try{
+
+            setPage(1)
+            setIsVeg(isVeg)
             const res= await axiosInstance.get('/api/food/search',{
+
                 params:{
+
                     search: search,
-                    isVeg: isVeg
+                    isVeg: isVeg,
+                    page: 1
+
                 }
+
             })
-            setSearchResult([,...res.data.foods])
+
+            setSearchResult([...res.data.foods])
+            setHasMore(res.data.totalPages>1);
+
         }catch(error){
+
+            setSearchResult([])
             console.log(error)
+
         }
+
+    }
+
+    if(loading || restaurantLoading){
+
+        return <HomeSkeleton />
+
     }
 
     
     return(
         <div className="min-h-screen bg-black">
+
 
             <Navbar />
 
@@ -193,14 +253,29 @@ function Home(){
                     }
 
                     {
-                    hasMore?
+                    hasMore &&
                     (
-                        <button 
-                            className="self-center mt-4 px-8 py-3 rounded-2xl bg-zinc-900 border border-zinc-700 text-white font-medium hover:bg-zinc-800 hover:border-zinc-600 transition cursor-pointer"
+                        <button
                             onClick={loadMore}
-                        >Load More</button>
-                    ):
-                    (null)
+                            disabled={loader}
+                            className={`self-center mt-4 px-8 py-3 rounded-2xl border text-white font-medium transition flex items-center justify-center gap-3 ${
+                                loader
+                                    ? 'bg-zinc-900 border-zinc-700 cursor-not-allowed'
+                                    : 'bg-zinc-900 border-zinc-700 hover:bg-zinc-800 hover:border-zinc-600 cursor-pointer'
+                            }`}
+                        >
+
+                            {
+                            loader &&
+                            (
+                                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                            )
+                            }
+
+                            {loader ? 'Loading...' : 'Load More'}
+
+                        </button>
+                    )
                     }
                     
                     

@@ -1,4 +1,4 @@
-function OrderSummary({order, address, setAddress, saveAddress, addressError, isEditingAddress, setIsEditingAddress, button}) {
+function OrderSummary({order, address, setAddress, saveAddress, addressError, isEditingAddress, setIsEditingAddress, button, addressSaving}) {
     
 
     return(
@@ -54,34 +54,45 @@ function OrderSummary({order, address, setAddress, saveAddress, addressError, is
                     )
                 }
 
+
                 {
-                    button &&
+                button &&
+                (
+                    !isEditingAddress
+                    ?
                     (
-                        !isEditingAddress
-                        ?
-                        (
-                            <button
-                                onClick={() =>
-                                    setIsEditingAddress(true)
-                                }
-                                className="bg-sky-500 hover:bg-sky-600 px-4 py-2 rounded-xl text-white self-start"
-                            >
-                                Edit
-                            </button>
-                        )
-                        :
-                        (
-                            <button
-                                onClick={() =>
-                                    saveAddress(address)
-                                }
-                                className="bg-green-500 hover:bg-green-600 px-4 py-2 rounded-xl text-white self-start"
-                            >
-                                Save Address
-                            </button>
-                        )
+                        <button
+                            onClick={() => setIsEditingAddress(true)}
+                            className="bg-sky-500 hover:bg-sky-600 px-4 py-2 rounded-xl text-white self-start"
+                        >
+                            Edit
+                        </button>
                     )
+                    :
+                    (
+                        <button
+                            onClick={() => saveAddress(address)}
+                            disabled={addressSaving}
+                            className={`px-4 py-2 rounded-xl text-white self-start flex items-center gap-2 transition ${
+                                addressSaving
+                                    ? 'bg-green-500 cursor-not-allowed'
+                                    : 'bg-green-500 hover:bg-green-600 cursor-pointer'
+                            }`}
+                        >
+                            {
+                            addressSaving &&
+                            (
+                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                            )
+                            }
+
+                            {addressSaving ? 'Saving' : 'Save Address'}
+
+                        </button>
+                    )
+                )
                 }
+
 
             </div>
 

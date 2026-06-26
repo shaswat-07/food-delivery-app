@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 import axiosInstance from '../utils/axiosInstance.js'
-
+import MenuSkeleton from '../components/skeleton/MenuSkeleton.jsx'
 import FoodCard from '../components/FoodCard'
 import Navbar from '../components/Navbar.jsx'
 
@@ -14,6 +14,7 @@ function Menu(){
     const { id } = useParams()
 
     const [foods, setFoods] = useState([])
+    const [loading, setLoading] = useState(true)
 
     useEffect(() => {
 
@@ -30,12 +31,23 @@ function Menu(){
                 console.log(error)
                 
             }
+            finally{
+
+                setLoading(false)
+
+            }
 
         }
 
         fetchMenu()
 
     }, [id])
+
+    if(loading){
+
+        return <MenuSkeleton/>
+        
+    }
 
     return(
 

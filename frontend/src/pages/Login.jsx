@@ -14,20 +14,20 @@ function Login(){
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [loginError, setLoginError] = useState('')
+    const [loading, setLoading] = useState(false)
     
     async function handleLogin(){
 
 
         try{
 
-
+            setLoading(true)
             const res = await axiosInstance.post('/api/auth/login',
                 {
                     email,
                     password
                 }
             )
-            console.log('Login response = ', res)
 
             localStorage.setItem('access-token', res.data.accessToken)
             await fetchUser()
@@ -37,6 +37,11 @@ function Login(){
         }catch(error){
             setLoginError(error.response?.data || error.message)
             console.log(error.response?.data || error.message)
+        }
+        finally{
+
+            setLoading(false)
+
         }
     }
 
@@ -77,12 +82,31 @@ function Login(){
                     className="w-full bg-zinc-800 text-white rounded-2xl p-3 sm:p-4 outline-none border border-zinc-700 focus:border-zinc-500 transition"
                 />
 
-                <button
-                    onClick={handleLogin}
-                    className="w-full bg-white text-black rounded-2xl p-3 sm:p-4 font-semibold hover:opacity-90 transition"
-                >
-                    Login
-                </button>
+                {
+                loading ?
+                (
+                    <button
+                        disabled
+                        className="w-full bg-white text-black rounded-2xl p-3 sm:p-4 font-semibold flex items-center justify-center gap-3 cursor-not-allowed"
+                    >
+
+                        <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+
+                        <span>Logging in</span>
+
+                    </button>
+                )
+                :
+                (
+                    <button
+                        onClick={handleLogin}
+                        className="w-full bg-white text-black rounded-2xl p-3 sm:p-4 font-semibold hover:opacity-90 transition cursor-pointer"
+                    >
+                        Login
+                    </button>
+                )
+                }
+                
 
                 <div className="flex items-center gap-3">
 
@@ -103,6 +127,7 @@ function Login(){
 
                             try{
 
+                                setLoading(true)
                                 const res = await axiosInstance.post(
                                     '/api/auth/googleLogin',
                                     {
@@ -114,12 +139,21 @@ function Login(){
                                     'access-token',
                                     res.data.accessToken
                                 )
+                                await fetchUser()
 
                                 navigate('/')
 
-                            }catch(error){
+                            }
+                            catch(error){
+
                                 setLoginError(error.response?.data || error.message)
                                 console.log(error)
+
+                            }
+                            finally{
+
+                                setLoading(false)
+
                             }
                         }}
                         onError={() => console.log('Google Login Failed')}

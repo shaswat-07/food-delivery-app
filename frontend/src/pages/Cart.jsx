@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axiosInstance from '../utils/axiosInstance'
-
+import CartSkeleton from '../components/skeleton/CartSkeleton.jsx'
 import Navbar from '../components/Navbar'
 import CartItem from '../components/CartItem'
 
@@ -11,19 +11,34 @@ function Cart(){
     const navigate = useNavigate()
     const [cartItems, setCartItems] = useState([])
     const [selectedItems, setSelectedItems] = useState([])
+    const [loading, setLoading] = useState(true)
 
     
     useEffect(() => {
         
         async function fetchCart(){
+
             try{
+
                 const res = await axiosInstance.get('/api/cart/view')
                 setCartItems(res.data.items)
-            }catch(error){
-                console.log(error)
+
             }
+            catch(error){
+
+                console.log(error)
+
+            }
+            finally{
+
+                setLoading(false)
+
+            }
+
         }
+
         fetchCart()
+
     }, [])
 
 
@@ -45,10 +60,14 @@ function Cart(){
 
 
     async function handleIncrease(foodId, newQuantity){
+
         try{
+
             await axiosInstance.post('/api/cart/update', {
+
                 foodId,
                 quantity: newQuantity
+
             })
             setCartItems((prev) =>
                 prev.map((item) =>
@@ -58,27 +77,41 @@ function Cart(){
                 )
             )
         }catch(error){
+
             console.log(error)
+
         }
     }
 
 
     async function handleDecrease(foodId, newQuantity){
+
         if(newQuantity < 1) {
+
             try{
+
                 await axiosInstance.delete(`/api/cart/remove/${foodId}`)
                 setCartItems((prev) =>
                     prev.filter((item) => item.food._id !== foodId)
                 )
-            }catch(error){
-                console.log(error)  
+
             }
+            catch(error){
+
+                console.log(error)  
+
+            }
+
         }
         else{
+
             try{
+
                 await axiosInstance.post('/api/cart/update', {
+
                     foodId,
                     quantity: newQuantity
+
                 })
                 setCartItems((prev) =>
                     prev.map((item) =>
@@ -86,21 +119,38 @@ function Cart(){
                         ? { ...item, quantity: newQuantity }
                         : item
                     )
+
                 )
-            }catch(error){
-                console.log(error)
+
             }
+            catch(error){
+
+                console.log(error)
+
+            }
+
         }
+
             
     }
 
 
     function handleProceedToOrder(){
+
         navigate('/order', {
+
             state: {
+
                 selectedItems
+
             }
+
         })
+
+    }
+
+    if(loading){
+        return <CartSkeleton/>
     }
 
     return(

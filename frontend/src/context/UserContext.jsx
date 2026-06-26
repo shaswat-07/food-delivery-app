@@ -16,8 +16,6 @@ export function UserProvider({ children }){
         try{
 
             const res = await axiosInstance.get('/csrf-token')
-            console.log('Csrf token found')
-
             localStorage.setItem('csrf-token',res.data.csrfToken)
 
         }catch(error){
@@ -44,7 +42,7 @@ export function UserProvider({ children }){
 
             const response = await axiosInstance.get('/api/auth/getMe')
             setUser(response.data)
-            console.log('Authenticated user found ', response.data)
+    
         }catch(error){
 
             setUser(null)

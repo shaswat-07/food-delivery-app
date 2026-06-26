@@ -1,29 +1,50 @@
 import { useEffect, useState } from 'react'
 import axiosInstance from '../utils/axiosInstance.js'
 import { useNavigate, useLocation } from 'react-router-dom'
-
+import HistorySkeleton from '../components/skeleton/HistorySkeleton.jsx'
 import Navbar from '../components/Navbar.jsx'
 import OrderSummary from '../components/OrderSummary.jsx'
 
 function History(){
+
     const location = useLocation()
     const {address} = location.state || {}
 
     const [orderHistory, setOrderHistory]= useState([])
+    const[loading, setLoading]= useState(true)
 
     async function getOrderHistory(){
+
         try{
+
             const response = await axiosInstance.get('/api/order/history')
             setOrderHistory(response.data.orders)
-        }catch(error){
-            console.error('Error fetching order history:', error)
+
         }
+        catch(error){
+
+            console.error('Error fetching order history:', error)
+
+        }
+        finally{
+
+            setLoading(false)
+
+        }
+
     }
 
     useEffect(()=>{
+
         getOrderHistory()
+
     },[])
     
+    if(loading){
+
+        return <HistorySkeleton/>
+        
+    }
     
     return(
         <div className="min-h-screen bg-black pb-16">
