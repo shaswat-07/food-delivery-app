@@ -24,7 +24,7 @@ app.use(cors({
     origin: [
         'http://localhost:5173',
         'http://localhost:5174',
-        'https://food-delivery-app-sandy-tau-21.vercel.app'
+        'https://eatzip.vercel.app'
     ],
     credentials: true
 }))
