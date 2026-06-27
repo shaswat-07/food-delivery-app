@@ -30,7 +30,7 @@ function AuthLayout(){
                 <div className="flex flex-col items-center mb-4">
                     
                     <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-wide">
-                        Food
+                        EatZip
                     </h1>
 
                     <p className="text-zinc-400 text-sm mt-2">
